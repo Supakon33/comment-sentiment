@@ -7,16 +7,10 @@ import os
 from pathlib import Path
 import re
 import unicodedata
-PYTHAINLP_DATA_DIR = str(Path(__file__).resolve().parent / ".pythainlp-data")
-os.environ.setdefault("PYTHAINLP_DATA_DIR", PYTHAINLP_DATA_DIR)
-
-try:
-    from pythainlp.tokenize import word_tokenize
-except ImportError:
-    def word_tokenize(text, engine="newmm", keep_whitespace=False):
-        del engine
-        del keep_whitespace
-        return re.findall(r"\S+", text)
+def word_tokenize(text, engine="newmm", keep_whitespace=False):
+    del engine
+    del keep_whitespace
+    return re.findall(r"\S+", text)
 
 LABELS = ("positive", "negative", "neutral")
 URL_PATTERN = re.compile(r"(?:https?://|www\.)\S+", re.IGNORECASE)

@@ -1,16 +1,22 @@
 import sys
 import importlib.util
+import traceback
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-MODULE_PATH = ROOT / "api.py"
-spec = importlib.util.spec_from_file_location("pantip_api", MODULE_PATH)
-pantip_api = importlib.util.module_from_spec(spec)
-sys.modules[spec.name] = pantip_api
-spec.loader.exec_module(pantip_api)
-fastapi_app = pantip_api.app
+try:
+    MODULE_PATH = ROOT / "api.py"
+    spec = importlib.util.spec_from_file_location("pantip_api", MODULE_PATH)
+    pantip_api = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = pantip_api
+    spec.loader.exec_module(pantip_api)
+    fastapi_app = pantip_api.app
+    import_error = None
+except Exception as exc:
+    fastapi_app = None
+    import_error = f"{exc.__class__.__name__}: {exc}\n{traceback.format_exc()}"
 
 
 class ApiPrefixMiddleware:
@@ -32,6 +38,17 @@ class ApiPrefixMiddleware:
             elif path.startswith("/api/"):
                 scope["path"] = path[4:]
                 scope["raw_path"] = scope["path"].encode("utf-8")
+        if fastapi_app is None:
+            if scope["type"] == "http":
+                body = import_error.encode("utf-8")
+                await send({
+                    "type": "http.response.start",
+                    "status": 500,
+                    "headers": [(b"content-type", b"text/plain; charset=utf-8"),
+                                (b"content-length", str(len(body)).encode())],
+                })
+                await send({"type": "http.response.body", "body": body})
+                return
         await self.app(scope, receive, send)
 
 

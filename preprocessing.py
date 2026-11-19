@@ -7,13 +7,10 @@ import os
 from pathlib import Path
 import re
 import unicodedata
+import tempfile
 
 # newmm uses PyThaiNLP's bundled dictionary. Keep its runtime directory local.
-data_dir = (
-    Path("/tmp") / "pythainlp-data"
-    if os.environ.get("VERCEL") == "1"
-    else Path(__file__).resolve().parent / ".pythainlp-data"
-)
+data_dir = Path(tempfile.gettempdir()) / "pythainlp-data"
 os.environ.setdefault("PYTHAINLP_DATA_DIR", str(data_dir))
 from pythainlp.tokenize import word_tokenize
 

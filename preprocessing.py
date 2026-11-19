@@ -9,9 +9,11 @@ import re
 import unicodedata
 import tempfile
 
+PYTHAINLP_DATA_DIR = str(Path(tempfile.gettempdir()) / "pythainlp-data")
+os.environ["PYTHAINLP_DATA_DIR"] = PYTHAINLP_DATA_DIR
+os.environ.setdefault("PYTHAINLP_DATA_DIR", PYTHAINLP_DATA_DIR)
+
 # newmm uses PyThaiNLP's bundled dictionary. Keep its runtime directory local.
-data_dir = Path(tempfile.gettempdir()) / "pythainlp-data"
-os.environ.setdefault("PYTHAINLP_DATA_DIR", str(data_dir))
 from pythainlp.tokenize import word_tokenize
 
 LABELS = ("positive", "negative", "neutral")

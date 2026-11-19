@@ -1,7 +1,11 @@
 import sys
 import importlib.util
 import traceback
+import tempfile
+import os
 from pathlib import Path
+
+os.environ["PYTHAINLP_DATA_DIR"] = str(Path(tempfile.gettempdir()) / "pythainlp-data")
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:

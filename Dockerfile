@@ -23,8 +23,8 @@ ENV PYTHONUNBUFFERED=1 \
     OPENBLAS_NUM_THREADS=1 \
     MPLCONFIGDIR=/tmp/matplotlib
 WORKDIR /app
-COPY requirements.txt ./
-RUN python -m pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt requirements.docker.txt ./
+RUN python -m pip install --no-cache-dir -r requirements.docker.txt
 COPY api.py predict.py preprocessing.py scraper.py train.py ./
 COPY data/ ./data/
 COPY models/ ./models/

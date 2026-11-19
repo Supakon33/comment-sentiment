@@ -9,9 +9,12 @@ import re
 import unicodedata
 
 # newmm uses PyThaiNLP's bundled dictionary. Keep its runtime directory local.
-os.environ.setdefault(
-    "PYTHAINLP_DATA_DIR", str(Path(__file__).resolve().parent / ".pythainlp-data")
+data_dir = (
+    Path("/tmp") / "pythainlp-data"
+    if os.environ.get("VERCEL") == "1"
+    else Path(__file__).resolve().parent / ".pythainlp-data"
 )
+os.environ.setdefault("PYTHAINLP_DATA_DIR", str(data_dir))
 from pythainlp.tokenize import word_tokenize
 
 LABELS = ("positive", "negative", "neutral")
